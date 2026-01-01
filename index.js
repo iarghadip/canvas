@@ -1,36 +1,48 @@
 canvas((dot, dim) => {
 
-    const RADIOUS = 250;
-    const STEPS = RADIOUS * 3;
+    const RADIOUS = 300;
+    const PETALS = RADIOUS / 16;
+    const MAX_OFFSET = PETALS + 25;
 
+    const STEPS = RADIOUS * 3;
+    const R_STEP = MAX_OFFSET / (PETALS * 2);
     const deltaTheeta = dim.pi.double / STEPS;
 
     let incr = true;
-    let count = 0;
+    let count = 1;
+    let radiusOffset = 0;
 
     for (let i = 0; i <= STEPS; i++) {
-        const theeta = i * deltaTheeta;
+
+        const theta = i * deltaTheeta;
+
         if (incr) {
-            if (count < 25) {
-                count++;
-            } else {
+            radiusOffset += R_STEP;
+            if (radiusOffset >= MAX_OFFSET) {
+                radiusOffset = MAX_OFFSET;
                 incr = false;
-                count--;
             }
         } else {
-            if (count > 0) {
-                count--;
-            } else {
+            radiusOffset -= R_STEP;
+            if (radiusOffset <= 0) {
+                radiusOffset = 0;
                 incr = true;
-                count++;
             }
         }
 
-        const x = dim.width.half + count + RADIOUS * cos(theeta);
-        const y = dim.height.half + count + RADIOUS * sin(theeta);
+        if (count % PETALS === 0) {
+            incr = !incr;
+        }
+
+        count++;
+
+        const r = RADIOUS + radiusOffset;
+
+        const x = dim.width.half  + r * cos(theta);
+        const y = dim.height.half + r * sin(theta);
+
         dot(x, y);
     }
-
 });
 
 const factorial = (n) => {
